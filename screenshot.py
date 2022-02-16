@@ -12,6 +12,14 @@ except ImportError:
     print('Install using: pip install Pillow')
     sys.exit(1)
 
+def main(url, w, h):
+    global VIEWPORT_SIZE, URL, SCREENSHOT_PATH
+    URL = url
+    VIEWPORT_SIZE = (w, h)
+    SCREENSHOT_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'SCREENSHOT.png')
+    
+
+
 import tkinter as tk
 
 root = tk.Tk()
