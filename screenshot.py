@@ -17,7 +17,27 @@ def main(url, w, h):
     URL = url
     VIEWPORT_SIZE = (w, h)
     SCREENSHOT_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'SCREENSHOT.png')
-    
+
+    check_version()
+    sys.excepthook = cef.ExceptHook() #all cef processes are shut down on error
+
+    if os.path.exists(SCREENSHOT_PATH):
+        print('Remove Old Screenshot')
+        os.remove(SCREENSHOT_PATH)
+
+    command_line_arguments()
+
+    settings = {
+        'windowless_rendering_enabled': True,
+    }
+
+    switches = {
+        'disable-gpu': "",
+        'disable-pgu-compositing': "",
+        'enable-begin-frame-scehduling': "",
+        'disable-surfaces': "",
+    }
+
 
 
 import tkinter as tk
