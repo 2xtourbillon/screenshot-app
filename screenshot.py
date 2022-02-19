@@ -1,3 +1,4 @@
+from calendar import LocaleHTMLCalendar
 from tempfile import TemporaryFile
 from cefpython3 import cefpython as cef #web browsing
 import os
@@ -82,6 +83,23 @@ def command_line_arguments():
     elif len(sys.argv) < 1:
         print('Error: Expected Arguments Not Received!'
               'Expected Args are URL, Width and Height')
+
+# creating browser in off-screen mode
+def create_browser(settings):
+    global VIEWPORT_SIZE, URL
+    parent_window_handle = 0
+    window_info = cef.WindowInfo()
+    window_info.SetAsOffscreen(parent_window_handle)
+    print('Viewport size: {size}'.format(size=str(VIEWPORT_SIZE)))
+    print('Loading URL: {url}'.format(url=URL))
+    
+    browser = cef.CreateBrowserSync(window_info=window_info, settings=settings, url=URL)
+    browser.SetClientHandler(LoadHandler())
+    browser.SetClientHandler(RenderHandler())
+    browser.SendFocusEvent(True)
+    browser.WasResized()
+    
+
 
 import tkinter as tk
 
