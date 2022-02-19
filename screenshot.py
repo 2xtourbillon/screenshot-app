@@ -28,7 +28,7 @@ def main(url, w, h):
     command_line_arguments()
 
     settings = {
-        'windowless_rendering_enabled': True,
+        'windowless_rendering_enabled': True, #take screenshot of browser but don't open browser
     }
 
     switches = {
@@ -38,7 +38,50 @@ def main(url, w, h):
         'disable-surfaces': "",
     }
 
+    browser_settings = {
+        'windowless_frame_rate': 30,
+    }
 
+    cef.Initialize(settings=settings, switches=switches)
+    create_browser(browser_settings)
+    cef.MessageLoop() #programming contruct for dispatching events/messages
+    cef.Shutdown()
+    print('Opening your screenshot with the default Application')
+    open_with_default_application(SCREENSHOT_PATH)
+
+
+def check_versions():
+    ver = cef.GetVersion()
+    print('CEF Python {ver} '.format(ver=ver['version']))
+    print('Chromium {ver} '.format(ver=ver['chrome_version']))
+    print('CEF {ver} '.format(ver=ver['cef_version']))
+    print('Python {ver} {arch}'.format(ver=platform.python_version(), arch=platform.architecture()[0]))
+
+    assert cef.__version__ >= '57.0', 'CEF Python v57.0+ required to run this.'
+
+
+def command_line_arguments():
+    if len(sys.argv) == 4:
+        url = sys.argv[1]
+        width = int(sys.argv[2])
+        height = int(sys.argv[3])
+        #checking url
+        if url.startswith('http://') or url.startswith('https://'):
+            global URL
+            URL = url
+        else:
+            print('Error: Invalid URL Entered')
+            sys.exit(1)
+        #checking w and h
+        if width > 0 and height > 0:
+            global VIEWPORT_SIZE
+            VIEWPORT_SIZE = (width, height)
+        else:
+            print('Error: Invalid Width and Height!')
+            sys.exit(1)
+    elif len(sys.argv) < 1:
+        print('Error: Expected Arguments Not Received!'
+              'Expected Args are URL, Width and Height')
 
 import tkinter as tk
 
