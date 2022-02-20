@@ -124,8 +124,23 @@ def exit_app(browser):
     print('Closing browser and exiting the application')
     browser.CloseBrowser()
     cef.QuitMessageLoop()
-    
 
+class LoadHandler:
+    """loading the browser"""
+    def OnLoadingstateChange(self, browser, is_loading, **_):
+        if not is_loading:
+            sys.stdout.write(os.linesep)
+            print('Website has been loaded')
+            save_screenshot(browser)
+            cef.PostTask(cef.TID_UI, exit_app, browser)
+
+    def OnLoadError(self, browser, frame, error_code, failed_url, **_):
+        """handle errors during loading"""
+        if not frame.IsMain():
+            return 
+        print('Failed to load URL: {url}'.format(url=failed_url))
+        print('Error Code: {code}'.format(code=error_code))
+        cef.PostTask(cef.TID_UI, exit_app, browser)
 
 import tkinter as tk
 
