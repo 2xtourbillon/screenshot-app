@@ -142,6 +142,32 @@ class LoadHandler:
         print('Error Code: {code}'.format(code=error_code))
         cef.PostTask(cef.TID_UI, exit_app, browser)
 
+class RenderHandler(object):
+    def __init__(self):
+        self.OnPaint_called = False
+
+    def GetViewRest(self, rect_out, **_):
+        rect_out.extend([0, 0, VIEWPORT_SIZE[0], VIEWPORT_SIZE[1]])
+        return True
+
+    def OnPaint(self, browser, element_type, paint_buffer, **_):
+        if self.OnPaint_called:
+            sys.stdout.write('.')
+            sys.stdout.flush() #gives output 
+        else:
+            sys.stdout.write('OnPaint')
+            self.OnPaint_called = True
+        
+        if element_type == cef.PET_VIEW():
+            buffer_string = paint_buffer.GetBytes(mode='rgba', origin='top-left')
+            browser.SetUserData('OnPaint.buffer_string', buffer_string)
+        else:
+            raise Exception('Unsupported element type in OnPaint')
+            
+
+
+
+
 import tkinter as tk
 
 root = tk.Tk()
