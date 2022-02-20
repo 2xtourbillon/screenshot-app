@@ -1,3 +1,4 @@
 import sys
-print(sys.argv[1])
+import platform
+print(platform.architecture())
 

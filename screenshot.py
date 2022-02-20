@@ -1,5 +1,4 @@
-from calendar import LocaleHTMLCalendar
-from tempfile import TemporaryFile
+from turtle import Screen
 from cefpython3 import cefpython as cef #web browsing
 import os
 import platform
@@ -22,6 +21,7 @@ def main(url, w, h):
     check_version()
     sys.excepthook = cef.ExceptHook() #all cef processes are shut down on error
 
+    # deleting if screenshot already exists
     if os.path.exists(SCREENSHOT_PATH):
         print('Remove Old Screenshot')
         os.remove(SCREENSHOT_PATH)
@@ -62,6 +62,7 @@ def check_versions():
 
 
 def command_line_arguments():
+    """Checking command line args"""
     if len(sys.argv) == 4:
         url = sys.argv[1]
         width = int(sys.argv[2])
@@ -81,7 +82,7 @@ def command_line_arguments():
             print('Error: Invalid Width and Height!')
             sys.exit(1)
     elif len(sys.argv) < 1:
-        print('Error: Expected Arguments Not Received!'
+        print('Error: Expected Arguments Not Received!',
               'Expected Args are URL, Width and Height')
 
 # creating browser in off-screen mode
@@ -98,8 +99,16 @@ def create_browser(settings):
     browser.SetClientHandler(RenderHandler())
     browser.SendFocusEvent(True)
     browser.WasResized()
-    
 
+def save_screenshot(browser):
+    global SCREENSHOT_PATH
+    buffer_string = browser.GetUserData('OnPaint.buffer string')
+    if not buffer_string:
+        raise Exception('Buffer String was empty because OnPaint was never called')
+    
+    image = Image.frombytes('RGBA', VIEWPORT_SIZE, buffer_string, 'raw', 'RGBA', 0, 1)
+    image.save(SCREENSHOT_PATH, 'PNG')
+    print('Saved Screenshot to: {path}'.format(path=SCREENSHOT_PATH))
 
 import tkinter as tk
 
